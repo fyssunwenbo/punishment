@@ -1,0 +1,131 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+    <label for="name">请输入您的名字：</label>
+    <input type="text" id="name">
+    <br>
+    <label for="numQuestions">请输入您需要惩罚的题目数量：</label>
+    <button onclick="changeNumQuestions(-10);">-10</button>
+    <input type="number" id="numQuestions" min="0" value="50">
+    <button onclick="changeNumQuestions(10);">+10</button>
+    <br>
+    <button onclick="generateQuestions();">生成题目</button>
+    <button onclick="checkAnswers();">检查答案</button>
+    <div id="result"></div>
+
+    <script language="javascript">
+        function $(id) {
+            return document.getElementById(id)
+        }
+
+        function rand(b, t) {
+            return Math.round(Math.random() * (t - b)) + b
+        }
+
+        function check(exp, v, i) {
+            var str = ''
+            str += '<div style="display:inline-block; width: 50%; margin-bottom: 10px; text-align: center;">'
+            str += '<p style="display:inline-block;">' + exp + ' = </p>'
+            str += '<input type="text" style="margin-left: 10px;" onblur="checkAnswer(this, ' + v + ', ' + i + ')">'
+            str += '<label id="msg' + i + '"></label>'
+            str += '</div>'
+            return str
+        }
+
+        function changeNumQuestions(val) {
+            var numQuestionsInput = $('numQuestions')
+            var numQuestions = parseInt(numQuestionsInput.value) + val
+            if (numQuestions >= 0) {
+                numQuestionsInput.value = numQuestions
+            }
+        }
+
+        function generateQuestions() {
+            var name = $('name').value.trim()
+            var numQuestions = parseInt($('numQuestions').value)
+            var str = '<h2>' + name + '，请完成以下 ' + numQuestions + ' 道题目：</h2><br><div style="text-align: center;">'
+            var i = 1
+            while (i <= numQuestions) {
+                var r = rand(1, 8)
+                var question = ''
+                if (r == 1) {    //a+b+c
+                    var a = rand(10, 80)
+                    var b = rand(10, 90 - a)
+                    var c = rand(10, 100 - a - b)
+                    question = a + ' + ' + b + ' + ' + c
+                } else if (r == 2) {    //a+b-c
+                    var a = rand(10, 90)
+                    var b = rand(10, 100 - a)
+                    var c = rand(10, a + b)
+                    question = a + ' + ' + b + ' - ' + c
+                } else if (r == 3) {    //a-b+c
+                    var a = rand(10, 100)
+                    var b = rand(10, a)
+                    var c = rand(10, 100 - a + b)
+                    question = a + ' - ' + b + ' + ' + c
+                } else if (r == 4) {    //a-b-c
+                    var a = rand(30, 100)
+                    var b = rand(10, a - 10)
+                    var c = rand(10, a - b)
+                    question = a + ' - ' + b + ' - ' + c
+                } else if (r == 5) {    //x+(y+z)
+                    var a = rand(10, 80)
+                    var b = rand(10, 90 - a)
+                    var c = rand(10, 100 - a - b)
+                    question = a + ' + (' + b + ' + ' + c + ')'
+                } else if (r == 6) {    //x+(y-z)
+                    var a = rand(10, 90)
+                    var b = rand(10, 100 - a)
+                    var c = rand(10, a + b)
+                    question = a + ' + (' + b + ' - ' + c + ')'
+                } else if (r == 7) {    //x-(y+z)
+                    var a = rand(30, 100)
+                    var b = rand(10, a - 10)
+                    var c = rand(10, a - b)
+                    question = a + ' - (' + b + ' + ' + c + ')'
+                } else if (r == 8) {    //x-(y-z)
+                    var a = rand(10, 100)
+                    var b = rand(10, a)
+                    var c = rand(10, b)
+                    question = a + ' - (' + b + ' - ' + c + ')'
+                }
+                str += check(question, eval(question), i)
+                if (i % 2 === 0) {
+                    str += '<br>'
+                }
+                i++
+            }
+            str += '</div>'
+            $('result').innerHTML = str
+        }
+
+        function checkAnswer(input, correctAnswer, index) {
+            var messageElement = $('msg' + index)
+            if (parseInt(input.value) === correctAnswer) {
+                messageElement.innerHTML = '正确'
+            } else {
+                messageElement.innerHTML = '错误'
+            }
+        }
+
+        function checkAnswers() {
+            var numQuestions = parseInt($('numQuestions').value)
+            var correctCount = 0
+            for (var i = 1; i <= numQuestions; i++) {
+                var input = $('msg' + i)
+                if (input.innerHTML === '正确') {
+                    correctCount++
+                }
+            }
+            var name = $('name').value.trim()
+            if (correctCount === numQuestions) {
+                alert('Congratulations ' + name + '，您全部答对了！共计 ' + numQuestions + ' 题。')
+            } else {
+                alert('很遗憾，' + name + '，您还有未完成的题目。')
+            }
+        }
+    </script>
+</body>
+</html>
